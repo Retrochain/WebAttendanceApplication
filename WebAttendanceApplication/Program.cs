@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using WebAttendanceApplication.Data;
+
 namespace WebAttendanceApplication
 {
     public class Program
@@ -6,7 +9,14 @@ namespace WebAttendanceApplication
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            Console.WriteLine($"Database Connection String: {builder.Configuration.GetConnectionString("DefaultConnection")}");
+
             // Add services to the container.
+            builder.Services.AddControllersWithViews();
+            builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(
+                builder.Configuration.GetConnectionString("DefaultConnection"),
+                ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
+            ));
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
