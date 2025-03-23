@@ -1,4 +1,4 @@
-namespace WebAttendanceApplication.Models
+namespace WebAttendanceApplication.ViewModels
 {
     public class ErrorViewModel
     {

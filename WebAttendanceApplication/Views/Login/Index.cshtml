@@ -1,0 +1,36 @@
+﻿@model IEnumerable<dynamic>
+
+@{
+    ViewData["Title"] = $"{@ViewBag.Name} Courses";
+}
+
+<h2>Your Enrolled Courses</h2>
+
+@if (Model != null && Model.Any())
+{
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Course ID</th>
+                <th>Course Name</th>
+                <th>Course Code</th>
+                <th>Professor Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var course in Model)
+            {
+                <tr>
+                    <td>@course.CourseId</td>
+                    <td>@course.CourseName</td>
+                    <td>@course.CourseCode</td>
+                    <td>@course.ProfName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>You are not enrolled in any courses!</p>
+}

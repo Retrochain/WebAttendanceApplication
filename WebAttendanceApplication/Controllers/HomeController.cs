@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using WebAttendanceApplication.Data;
-using WebAttendanceApplication.Models;
+using WebAttendanceApplication.ViewModels;
 
 namespace WebAttendanceApplication.Controllers;
 
@@ -24,6 +24,11 @@ public class HomeController : Controller
     }
 
     public IActionResult Privacy()
+    {
+        return View();
+    }
+
+    public IActionResult Login()
     {
         return View();
     }
