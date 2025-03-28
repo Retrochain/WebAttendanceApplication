@@ -16,8 +16,11 @@ namespace WebAttendanceApplication.Controllers
         {
             _context = dbContext;
         }
+
+        [Authorize]
         public IActionResult Index()
         {
+            ViewBag.Name = HttpContext.User.FindFirst(ClaimTypes.Email)?.Value;
             var stdntEmail = User.FindFirst(ClaimTypes.Email)?.Value;
             if (string.IsNullOrEmpty(stdntEmail))
             {
@@ -40,7 +43,7 @@ namespace WebAttendanceApplication.Controllers
             })
             .ToList();
 
-            ViewBag.Name = HttpContext.User.FindFirst(ClaimTypes.Email)?.Value;
+            ViewBag.Name = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
             return View(enrolledCourses);
         }
         public IActionResult Login()
@@ -75,7 +78,7 @@ namespace WebAttendanceApplication.Controllers
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                     HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
                     //}
-                    return RedirectToAction("SecurePage");
+                    return RedirectToAction("Index");
                 }
                 else
                 {
@@ -92,14 +95,7 @@ namespace WebAttendanceApplication.Controllers
         public IActionResult LogOut()
         {
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Index");
-        }
-
-        [Authorize]
-        public IActionResult SecurePage()
-        {
-            ViewBag.Name = HttpContext.User.FindFirst(ClaimTypes.Email)?.Value;
-            return View();
+            return RedirectToAction("Login");
         }
     }
 }
