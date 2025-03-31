@@ -1,0 +1,51 @@
+﻿@model IEnumerable<WebAttendanceApplication.Models.Attendance>
+
+@{
+    ViewData["Title"] = "Attendance Record";
+}
+
+<div class="container">
+    <h2>Welcome @User.Identity.Name!</h2>
+    <h4>Course: @ViewBag.CourseName</h4>
+
+    <!-- Attendance Summary Section -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4>Total Attendance Summary</h4>
+        </div>
+        <div class="card-body">
+            <p class="mb-1"><strong>Total Classes Attended:</strong> @ViewBag.TotalAttended</p>
+            <p class="mb-1"><strong>Total Classes Missed:</strong> @ViewBag.TotalMissed</p>
+            <p class="mb-1"><strong>Excused Absences:</strong> @ViewBag.ExcusedAbsences</p>
+            <p class="mb-0"><strong>Attendance Percentage:</strong> @ViewBag.Percentage%</p>
+        </div>
+    </div>
+
+    <!-- Detailed Records Table -->
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            <h4>Detailed Attendance Record</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Submission Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Time?.ToString("MM/dd/yyyy")</td>
+                            <td>@item.AttendanceStatus</td>
+                            <td>@item.Time?.ToString("hh:mm tt")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
