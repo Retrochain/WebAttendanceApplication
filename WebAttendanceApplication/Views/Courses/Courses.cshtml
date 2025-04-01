@@ -16,6 +16,8 @@
                 <th>Course Name</th>
                 <th>Course Code</th>
                 <th>Professor Name</th>
+                <th>Quiz</th>
+                <th>Attendance</th>
             </tr>
         </thead>
         <tbody>
@@ -26,6 +28,8 @@
                     <td>@course.CourseName</td>
                     <td>@course.CourseCode</td>
                     <td>@course.ProfName</td>
+                    <td><a class="btn btn-warning btn-outline-dark">Quiz</a></td>
+                    <td><a class="btn btn-info btn-outline-dark" asp-controller="Attendances" asp-action="Attendance">Attendance</a></td>
                 </tr>
             }
         </tbody>
