@@ -6,9 +6,9 @@
 
 @if (userName != null)
 {
+    <h2>Hello @userName!</h2>
     <form asp-controller="Login" asp-action="LogOut" method="post" id="logoutForm" class="navbar-right">
         <ul class="nav navbar-nv navbar-right">
-            <li>Hello @userName!</li>
             <li><button type="submit" class="btn btn-link navbar-btn navbar-link">Log Off</button></li>
         </ul>
     </form>

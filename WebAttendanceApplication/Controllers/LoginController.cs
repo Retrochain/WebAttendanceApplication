@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using WebAttendanceApplication.Data;
@@ -17,7 +16,6 @@ namespace WebAttendanceApplication.Controllers
             _context = dbContext;
         }
 
-        [Authorize]
         public IActionResult Index()
         {
             ViewBag.Name = HttpContext.User.FindFirst(ClaimTypes.Email)?.Value;
@@ -46,8 +44,11 @@ namespace WebAttendanceApplication.Controllers
             ViewBag.Name = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
             return View(enrolledCourses);
         }
+
+        [HttpGet]
         public IActionResult Login()
         {
+            ViewBag.Password = "Reset Password";
             return View();
         }
 
@@ -58,13 +59,28 @@ namespace WebAttendanceApplication.Controllers
             //If the current model is valid
             if (ModelState.IsValid)
             {
-                var stdntUser = _context.Students.Where(x => x.UtdId == model.UtdId && x.UserName == model.UserName).FirstOrDefault();
+                var stdntUser = _context.Students.Where(x => x.UtdId == model.UtdId).FirstOrDefault();
                 if (stdntUser != null)
                 {
-
-                    bool isEnrolled = _context.Enrollments.Any(e => e.StudentId == stdntUser.StudentId);
-                    //if (isEnrolled)
-                    //{
+                    if (model.Password == null)
+                    {
+                        if (stdntUser.Password == null)
+                        {
+                            ViewBag.Password = "Create Password";
+                            ModelState.AddModelError("Password", "Password not yet set, please create a new password");
+                        }
+                        ModelState.AddModelError("Password", "Password is required.");
+                        return View(model);
+                    }
+                    else
+                    {
+                        var stdntPass = _context.Students.Where(p => p.Password == model.Password).FirstOrDefault();
+                        if (stdntPass == null)
+                        {
+                            ModelState.AddModelError("Password", "Password is incorrect.");
+                            return View(model);
+                        }
+                    }
                     var claims = new List<Claim>
                         {
                         //Storing the email in a cookie
@@ -77,17 +93,13 @@ namespace WebAttendanceApplication.Controllers
 
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                     HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
-                    //}
+
                     return RedirectToAction("Index");
                 }
                 else
                 {
-                    ModelState.AddModelError("", "You are not enrolled in any courses, please contact your professor.");
+                    ModelState.AddModelError("UtdId", "Student not found, please contact your professor.");
                 }
-            }
-            else
-            {
-                ModelState.AddModelError("", "UTD ID or Username is not correct.");
             }
             return View(model);
         }
@@ -96,6 +108,33 @@ namespace WebAttendanceApplication.Controllers
         {
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login");
+        }
+
+        [HttpGet]
+        public IActionResult SetPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult SetPassword(SetPasswordViewModel spmodel)
+        {
+            if (ModelState.IsValid)
+            {
+                var spCheck = _context.Students.Where(s => s.UtdId == spmodel.utdID).FirstOrDefault();
+                if (spCheck != null)
+                {
+                    spCheck.Password = spmodel.NewPassword;
+                    _context.SaveChanges();
+                    return RedirectToAction("Login");
+                }
+                else
+                {
+                    ModelState.AddModelError("utdID", "Incorrect UTD ID entered.");
+                    return View(spmodel);
+                }
+            }
+            return View();
         }
     }
 }
